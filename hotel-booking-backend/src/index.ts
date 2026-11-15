@@ -22,6 +22,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
+import User from "./models/user";
+import Hotel from "./models/hotel";
 
 // Environment Variables Validation - Core required variables
 const requiredEnvVars = [
@@ -58,6 +60,177 @@ cloudinary.config({
 
 console.log("☁️  Cloudinary configured successfully");
 
+// Auto-seed demo users & default hotels for fresh databases
+const ensureDemoData = async () => {
+  try {
+    const SPECS = [
+      {
+        email: "test@user.com",
+        role: "admin" as const,
+        firstName: "Test",
+        lastName: "Admin",
+        image: "https://i.pravatar.cc/150?u=admin",
+      },
+      {
+        email: "owner@hotel.com",
+        role: "hotel_owner" as const,
+        firstName: "Hotel",
+        lastName: "Owner",
+        image: "https://i.pravatar.cc/150?u=owner",
+      },
+      {
+        email: "guest@user.com",
+        role: "user" as const,
+        firstName: "Guest",
+        lastName: "Traveler",
+        image: "https://i.pravatar.cc/150?u=guest",
+      },
+    ];
+
+    for (const spec of SPECS) {
+      const user = await User.findOne({ email: spec.email });
+      if (!user) {
+        await new User({
+          email: spec.email,
+          password: "12345678",
+          firstName: spec.firstName,
+          lastName: spec.lastName,
+          image: spec.image,
+          role: spec.role,
+          emailVerified: true,
+          isActive: true,
+          totalBookings: 0,
+          totalSpent: 0,
+        }).save();
+        console.log(`✅ Demo user created: ${spec.email} (password: 12345678)`);
+      }
+    }
+
+    const hotelCount = await Hotel.countDocuments();
+    if (hotelCount === 0) {
+      console.log("🌱 Database has no hotels. Seeding default hotels catalog...");
+      const ownerUser = await User.findOne({ email: "owner@hotel.com" }) || await User.findOne({});
+      const ownerId = ownerUser ? ownerUser.id : "demo_owner";
+
+      const defaultHotels = [
+        {
+          userId: ownerId,
+          name: "Connaught Place Grand",
+          city: "New Delhi",
+          country: "India",
+          description: "Classic business hotel on the inner circle of Connaught Place, minutes from India Gate and Rajiv Chowk metro.",
+          type: ["Hotel", "Business"],
+          adultCount: 2,
+          childCount: 1,
+          facilities: ["Free WiFi", "Parking", "Restaurant", "Business Center"],
+          pricePerNight: 6800,
+          starRating: 4,
+          imageUrls: [
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+            "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800"
+          ],
+          lastUpdated: new Date(),
+        },
+        {
+          userId: ownerId,
+          name: "Marine Drive Skyline Suites",
+          city: "Mumbai",
+          country: "India",
+          description: "Sea-facing suites along the Queen's Necklace with sunset views of the Arabian Sea and easy access to Nariman Point.",
+          type: ["Luxury", "Hotel"],
+          adultCount: 2,
+          childCount: 2,
+          facilities: ["Free WiFi", "Spa", "Restaurant", "Bar", "Gym"],
+          pricePerNight: 12500,
+          starRating: 5,
+          imageUrls: [
+            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
+          ],
+          lastUpdated: new Date(),
+        },
+        {
+          userId: ownerId,
+          name: "Lake Pichola Retreat",
+          city: "Udaipur",
+          country: "India",
+          description: "Heritage-inspired boutique retreat on the calm shores of Lake Pichola with rooftop dining facing the City Palace.",
+          type: ["Resort", "Romantic"],
+          adultCount: 2,
+          childCount: 0,
+          facilities: ["Free WiFi", "Swimming Pool", "Spa", "Restaurant"],
+          pricePerNight: 9800,
+          starRating: 5,
+          imageUrls: [
+            "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800",
+            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800"
+          ],
+          lastUpdated: new Date(),
+        },
+        {
+          userId: ownerId,
+          name: "Candolim Beach Resort",
+          city: "Goa",
+          country: "India",
+          description: "Tropical beachfront resort steps from Candolim Beach with private cabanas, pool bar, and water-sport concierge.",
+          type: ["Resort", "Beach"],
+          adultCount: 2,
+          childCount: 2,
+          facilities: ["Free WiFi", "Swimming Pool", "Bar", "Restaurant", "Spa"],
+          pricePerNight: 7500,
+          starRating: 4,
+          imageUrls: [
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800"
+          ],
+          lastUpdated: new Date(),
+        },
+        {
+          userId: ownerId,
+          name: "Rajputana Heritage Haveli",
+          city: "Jaipur",
+          country: "India",
+          description: "Restored 19th-century haveli in the Pink City featuring traditional courtyard architecture, jharokha windows, and Rajasthani cuisine.",
+          type: ["Boutique", "Historic"],
+          adultCount: 2,
+          childCount: 1,
+          facilities: ["Free WiFi", "Parking", "Restaurant", "Cultural Shows"],
+          pricePerNight: 5400,
+          starRating: 4,
+          imageUrls: [
+            "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800",
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
+          ],
+          lastUpdated: new Date(),
+        },
+        {
+          userId: ownerId,
+          name: "Shimla Pine View Lodge",
+          city: "Shimla",
+          country: "India",
+          description: "Cozy hillside retreat surrounded by cedar and pine forests, panoramic Himalayan ridge views, and fireplace lounges.",
+          type: ["Cabin", "Romantic"],
+          adultCount: 2,
+          childCount: 1,
+          facilities: ["Free WiFi", "Heating", "Restaurant", "Trekking Desk"],
+          pricePerNight: 4900,
+          starRating: 4,
+          imageUrls: [
+            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800",
+            "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800"
+          ],
+          lastUpdated: new Date(),
+        }
+      ];
+
+      await Hotel.insertMany(defaultHotels);
+      console.log(`✅ Seeded ${defaultHotels.length} default hotels.`);
+    }
+  } catch (err) {
+    console.error("Error auto-ensuring demo data:", err);
+  }
+};
+
 // MongoDB Connection with Error Handling + TLS for Atlas / tls=true URIs
 const connectDB = async () => {
   try {
@@ -81,6 +254,9 @@ const connectDB = async () => {
     if (wantsTls) {
       console.log("🔒 MongoDB TLS enabled");
     }
+
+    // Auto-ensure demo accounts and seed initial catalog if database is fresh
+    await ensureDemoData();
   } catch (error) {
     console.error("❌ MongoDB connection error:", error);
     console.error("💡 Please check your MONGODB_CONNECTION_STRING");
