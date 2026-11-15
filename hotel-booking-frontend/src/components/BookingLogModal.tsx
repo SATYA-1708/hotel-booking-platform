@@ -92,7 +92,7 @@ const BookingLogModal: React.FC<BookingLogModalProps> = ({
     }
   };
 
-  const getDateCategory = (checkIn: Date) => {
+  const getDateCategory = (checkIn: Date | string) => {
     const today = new Date();
     const checkInDate = new Date(checkIn);
     const diffTime = checkInDate.getTime() - today.getTime();

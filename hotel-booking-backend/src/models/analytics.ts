@@ -1,7 +1,6 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IAnalytics extends Document {
-  _id: string;
   date: Date;
   metrics: {
     totalBookings: number;

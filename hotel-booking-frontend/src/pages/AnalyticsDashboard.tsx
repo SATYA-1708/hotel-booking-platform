@@ -515,7 +515,7 @@ const AnalyticsDashboard = () => {
                   />
                   <YAxis allowDecimals={false} />
                   <Tooltip
-                    labelFormatter={(value) =>
+                    labelFormatter={(value: any) =>
                       new Date(value).toLocaleDateString()
                     }
                     formatter={(value) => [value, "Bookings"]}
@@ -545,7 +545,7 @@ const AnalyticsDashboard = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ _id, percent, count }) =>
+                    label={({ _id, percent, count }: any) =>
                       `${_id} ${((percent || 0) * 100).toFixed(0)}% (${count})`
                     }
                     outerRadius={80}
@@ -583,7 +583,7 @@ const AnalyticsDashboard = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ status, percent, count }) =>
+                    label={({ status, percent, count }: any) =>
                       `${status} ${((percent || 0) * 100).toFixed(0)}% (${count})`
                     }
                     outerRadius={80}
@@ -831,7 +831,7 @@ const AnalyticsDashboard = () => {
                   />
                   <YAxis allowDecimals={false} />
                   <Tooltip
-                    labelFormatter={(value) =>
+                    labelFormatter={(value: any) =>
                       new Date(value).toLocaleDateString()
                     }
                     formatter={(value) => [value, "Bookings"]}
@@ -873,7 +873,7 @@ const AnalyticsDashboard = () => {
                   />
                   <YAxis />
                   <Tooltip
-                    labelFormatter={(value) =>
+                    labelFormatter={(value: any) =>
                       new Date(value).toLocaleDateString()
                     }
                     formatter={(value) => [
@@ -1137,7 +1137,7 @@ const AnalyticsDashboard = () => {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent, count }) =>
+                        label={({ name, percent, count }: any) =>
                           `${name} ${((percent || 0) * 100).toFixed(0)}% (${count})`
                         }
                         outerRadius={80}

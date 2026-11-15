@@ -1,7 +1,6 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IBooking extends Document {
-  _id: string;
   userId: string;
   hotelId: string;
   firstName: string;
