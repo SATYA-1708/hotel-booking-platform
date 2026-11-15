@@ -1,0 +1,52 @@
+{
+  "name": "booking-backend",
+  "version": "0.2.0",
+  "description": "booking mern app backend",
+  "main": "./src/index.ts",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc --skipLibCheck",
+    "start": "node dist/hotel-booking-backend/src/index.js",
+    "seed": "ts-node src/scripts/seed.ts",
+    "users:test": "ts-node src/scripts/ensure-test-users.ts",
+    "e2e": "cross-env DOTENV_CONFIG_PATH=.env.e2e nodemon"
+  },
+  "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.8.1",
+    "@types/cookie-parser": "^1.4.6",
+    "@types/cors": "^2.8.16",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.9.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.41.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.0.1",
+    "express-validator": "^7.0.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.2.0",
+    "mongoose": "^8.0.0",
+    "morgan": "^1.10.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.0.1",
+    "stripe": "^14.8.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.2.0"
+  }
+}
