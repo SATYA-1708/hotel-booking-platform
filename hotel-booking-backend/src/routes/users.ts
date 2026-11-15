@@ -308,7 +308,17 @@ router.post(
       );
 
       res.cookie("auth_token", token, authCookieOptions());
-      return res.status(200).send({ message: "User registered OK" });
+      return res.status(200).json({
+        userId: user._id,
+        token: token,
+        message: "User registered OK",
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send({ message: "Something went wrong" });

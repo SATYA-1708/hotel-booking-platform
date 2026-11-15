@@ -71,40 +71,73 @@ export const fetchWishlist = async (): Promise<HotelType[]> => {
 };
 
 export const register = async (formData: RegisterFormData) => {
-  const response = await axiosInstance.post("/api/users/register", formData);
-  return response.data;
+  try {
+    const response = await axiosInstance.post("/api/users/register", formData);
+    const token = response.data?.token;
+    if (token) {
+      localStorage.setItem("session_id", token);
+    }
+    if (response.data?.userId) {
+      localStorage.setItem("user_id", response.data.userId);
+    }
+    if (response.data?.user) {
+      const { email, firstName, lastName } = response.data.user;
+      if (email) localStorage.setItem("user_email", email);
+      const name = [firstName, lastName].filter(Boolean).join(" ") || email;
+      if (name) localStorage.setItem("user_name", name);
+    }
+    return response.data;
+  } catch (error: any) {
+    const msg = error.response?.data?.message;
+    if (typeof msg === "string") {
+      throw new Error(msg);
+    } else if (Array.isArray(msg) && msg[0]?.msg) {
+      throw new Error(msg[0].msg);
+    }
+    throw error;
+  }
 };
 
 export const signIn = async (formData: SignInFormData) => {
-  const response = await axiosInstance.post("/api/auth/login", formData);
-
-  // Store JWT token from response body in localStorage
-  const token = response.data?.token;
-  if (token) {
-    localStorage.setItem("session_id", token);
-  }
-
-  // Store user info for profile avatar / UsernameMenu
-  if (response.data?.userId) {
-    localStorage.setItem("user_id", response.data.userId);
-  }
-  if (response.data?.user) {
-    const { email, firstName, lastName } = response.data.user;
-    if (email) localStorage.setItem("user_email", email);
-    const name = [firstName, lastName].filter(Boolean).join(" ") || email;
-    if (name) localStorage.setItem("user_name", name);
-  }
-
-  // Refresh validateToken cache so isLoggedIn flips without full reload
   try {
-    await validateToken();
-    await queryClient.invalidateQueries("validateToken");
-    await queryClient.refetchQueries("validateToken");
-  } catch {
-    // Token stored — UI still works if validate races; do not spam console
-  }
+    const response = await axiosInstance.post("/api/auth/login", formData);
 
-  return response.data;
+    // Store JWT token from response body in localStorage
+    const token = response.data?.token;
+    if (token) {
+      localStorage.setItem("session_id", token);
+    }
+
+    // Store user info for profile avatar / UsernameMenu
+    if (response.data?.userId) {
+      localStorage.setItem("user_id", response.data.userId);
+    }
+    if (response.data?.user) {
+      const { email, firstName, lastName } = response.data.user;
+      if (email) localStorage.setItem("user_email", email);
+      const name = [firstName, lastName].filter(Boolean).join(" ") || email;
+      if (name) localStorage.setItem("user_name", name);
+    }
+
+    // Refresh validateToken cache so isLoggedIn flips without full reload
+    try {
+      await validateToken();
+      await queryClient.invalidateQueries("validateToken");
+      await queryClient.refetchQueries("validateToken");
+    } catch {
+      // Token stored — UI still works if validate races; do not spam console
+    }
+
+    return response.data;
+  } catch (error: any) {
+    const msg = error.response?.data?.message;
+    if (typeof msg === "string") {
+      throw new Error(msg);
+    } else if (Array.isArray(msg) && msg[0]?.msg) {
+      throw new Error(msg[0].msg);
+    }
+    throw error;
+  }
 };
 
 /** Clears JWT keys when session is invalid */
